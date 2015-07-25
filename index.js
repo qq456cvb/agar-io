@@ -22,11 +22,11 @@ var maxSizeMass = 500;
 var maxMoveSpeed = 100;
 
 var massDecreaseRatio = 1000;
-
+var maxMassScale = 5;
 var foodMass = 1;
 
-var newFoodPerPlayer = 3;
-var respawnFoodPerPlayer = 1;
+var newFoodPerPlayer = 30;
+var respawnFoodPerPlayer = 10;
 
 var foodRandomWidth = 500;
 var foodRandomHeight = 500;
@@ -133,9 +133,13 @@ io.on('connection', function (socket) {
 
     // Heartbeat function, update everytime
     socket.on("playerSendTarget", function (target) {
-        if (target.x != currentPlayer.x && target.y != currentPlayer.y) {
-            currentPlayer.x += (target.x - currentPlayer.x) / currentPlayer.speed;
-            currentPlayer.y += (target.y - currentPlayer.y) / currentPlayer.speed;
+        if (target.x != currentPlayer.screenWidth / 2
+         && target.y != currentPlayer.screenHeight / 2) {
+            currentPlayer.x += (target.x - currentPlayer.screenWidth / 2) / currentPlayer.speed;
+            currentPlayer.y += (target.y - currentPlayer.screenHeight / 2) / currentPlayer.speed;
+            // console.log("%d", currentPlayer.x);
+            // currentPlayer.xPivot = currentPlayer.x;
+            // currentPlayer.yPivot = currentPlayer.y;
 
             for (var f = 0; f < foods.length; f++) {
                 if (hitTest(
@@ -148,6 +152,10 @@ io.on('connection', function (socket) {
 
                     if (currentPlayer.mass < maxSizeMass) {
                         currentPlayer.mass += foodMass;
+                        if (currentPlayer.mass > maxMassScale) {
+                            currentPlayer.displayScale = (maxMassScale + defaultPlayerSize) / (currentPlayer.mass + defaultPlayerSize);
+                            // console.log("%d", currentPlayer.displayScale);
+                        };
                     }
 
                     if (currentPlayer.speed < maxMoveSpeed) {
@@ -173,6 +181,10 @@ io.on('connection', function (socket) {
                     if (users[e].mass != 0 && users[e].mass < currentPlayer.mass - eatableMassDistance) {
                         if (currentPlayer.mass < maxSizeMass) {
                             currentPlayer.mass += users[e].mass;
+                            if (currentPlayer.mass > maxMassScale) {
+                                currentPlayer.displayScale -= 1.0 / (currentPlayer.mass + 11);
+                                console.log("%d", currentPlayer.displayScale);
+                            };
                         }
 
                         if (currentPlayer.speed < maxMoveSpeed) {
