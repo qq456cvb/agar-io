@@ -1,35 +1,21 @@
 # agar-io
 
-<!-- README refined by Cursor -->
+A minimal multiplayer **[agar.io](https://agar.io)** clone: Node.js + Express + **Socket.IO** on the server, a plain HTML5 canvas client. Move your cell with the mouse, eat food pellets and smaller players to grow, get eaten by bigger ones.
 
-my agar-io
+## How It Works
 
-## Overview
+- **Server** (`index.js`) — keeps the authoritative world state (players, food). On every `playerSendTarget` heartbeat it moves the player toward their mouse target, resolves food and player-vs-player collisions by distance check (a player eats another only when sufficiently more massive), respawns food, and broadcasts the updated world. Eaten players get an `RIP` event and are disconnected.
+- **Client** (`js/app.js`, `index.html`) — prompts for a name, connects over Socket.IO, sends the mouse position each animation frame, and renders the camera-centered world (food, enemies, you, and a grid) on a canvas. Includes an in-game chat box with a `-ping` latency command.
 
-This repository contains JavaScript, HTML code from an older research, course, or prototype project. The README has been refreshed to make the repository easier to scan while preserving the original notes below.
+## Running
 
-## Repository Contents
+```bash
+npm install express socket.io
+node index.js
+```
 
-- `css/`
-- `js/`
-- `socket.io/`
-
-## Setup
-
-- This legacy repo does not pin a full environment. Start from the language/toolchain implied by the source files, then install missing packages as reported by the runtime.
-
-## Usage
-
-- inspect the source directories listed below; many of these older repos were kept as research prototypes rather than packaged applications.
-
-## Data and Artifacts
-
-No new large artifact is stored in this repository. If a dataset or checkpoint is required, follow the links and notes in the original section below.
+Then open `http://127.0.0.1:5000` in one or more browser tabs (the client's server address is hardcoded in `js/app.js`; change it to play over a LAN).
 
 ## Status
 
-This is a `Batch C` cleanup pass for a legacy repository. Commands may require dependency/version adjustments on a modern machine.
-
-## License
-
-No explicit license file was found in this checkout; check the original project context before reusing code.
+A weekend-project snapshot of the early agar.io-clone era: no rooms, no mass decay, no cell splitting or ejecting, and the trust model is "the client is honest". Fun as a Socket.IO study, not a production game.
